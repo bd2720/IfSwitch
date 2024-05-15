@@ -4,33 +4,39 @@
 
 char buf[1<<20];
 
-// generate the if macro:
+// generate the switch macro:
 /* rem = var % n;
-   if(rem == 0){body}
-   else if(rem == 1){body}
-   ...
-   else if(rem = (n-1)){body}
-   else{body}
+   switch(rem){
+	case 0:
+   		body
+	break;
+	...
+   	case (n-1):
+		body
+	break;
+	default:
+		body
+   }
 */
 
-int generateIf(){
-	char *s0 = "#define IF(v,r,b) do{(r)=(v)%";
+int generateSwitch(){
+	char *s0 = "#define SWITCH(v,r,b) do{(r)=(v)%";
 	int s0_len = strlen(s0);
 	// n
-	char *s1 = ";if((v)==0){b;}";
+	char *s1 = ";switch(r){case 0:b;break;";
 	int s1_len = strlen(s1);
 	// s2 or s4
-	char *s2 = "else if((v)==";
+	char *s2 = "case ";
 	int s2_len = strlen(s2);
 	// i
-	char *s3 = "){b;}";
+	char *s3 = ":b;break;";
 	int s3_len = strlen(s3);
 	// s2 or s4
-	char *s4 = "else{b;}}while(0)";
+	char *s4 = "default:b;}}while(0)";
 	int s4_len = strlen(s4);
 
 	if(N < 2) return -1;
-	FILE *f = fopen("if.out", "w");
+	FILE *f = fopen("switch.out", "w");
 	if(!f) return -1;
 	char *p = buf; // pointer to start of buf
 	strcpy(p, s0);
@@ -62,5 +68,5 @@ int generateIf(){
 }
 
 int main(){
-	return generateIf();
+	return generateSwitch();
 }
