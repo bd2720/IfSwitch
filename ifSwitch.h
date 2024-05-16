@@ -11,6 +11,9 @@
 // N >= 2
 #define N 100
 
+// for internal use by if.c and switch.c
+#define BUFSIZE 256
+
 // compute elapsed time between 2 timevals
 #define TIME(t1, t2) ((t2).tv_sec-(t1).tv_sec)+(((t2).tv_usec-(t1).tv_usec)/1e6)
 #endif

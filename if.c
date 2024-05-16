@@ -2,7 +2,7 @@
 #include <string.h>
 #include "ifSwitch.h"
 
-char buf[1<<20];
+char buf[BUFSIZE];
 
 // generate the if macro:
 /* rem = var % n;
@@ -17,16 +17,16 @@ int generateIf(){
 	char *s0 = "#define IF(v,r,b) do{(r)=(v)%";
 	int s0_len = strlen(s0);
 	// n
-	char *s1 = ";if((v)==0){b;}";
+	char *s1 = ";if((v)==0){(b);}";
 	int s1_len = strlen(s1);
 	// s2 or s4
 	char *s2 = "else if((v)==";
 	int s2_len = strlen(s2);
 	// i
-	char *s3 = "){b;}";
+	char *s3 = "){(b);}";
 	int s3_len = strlen(s3);
 	// s2 or s4
-	char *s4 = "else{b;}}while(0)";
+	char *s4 = "else{(b);}}while(0)";
 	int s4_len = strlen(s4);
 
 	if(N < 2) return -1;
@@ -42,8 +42,13 @@ int generateIf(){
 	p += n_len;
 	strcpy(p, s1);
 	p += s1_len;
+	
+	fwrite(buf, sizeof(char), (long)(p - buf), f);
+	p = buf; // reset temp ptr after write
+		
 	int i, i_len;
 	char iBuf[12];
+	// be memory-safe, write in chunks
 	for(i = 1; i < N-1; i++){
 		strcpy(p, s2);
 		p += s2_len;
@@ -53,6 +58,9 @@ int generateIf(){
 		p += i_len;
 		strcpy(p, s3);
 		p += s3_len;
+		
+		fwrite(buf, sizeof(char), (long)(p - buf), f);
+		p = buf; // reset temp ptr after write
 	}
 	strcpy(p, s4);
 	p += s4_len;
